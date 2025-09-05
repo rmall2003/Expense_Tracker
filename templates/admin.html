@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>User Database Entries</h2>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Password</th>
+    </tr>
+    {% for user in users %}
+    <tr>
+        <td>{{ user.id }}</td>
+        <td>{{ user.username }}</td>
+        <td>{{ user.password }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="{{ url_for('index') }}">Back to Home</a>
+{% endblock %}

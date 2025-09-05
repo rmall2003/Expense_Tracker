@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Edit Expense</h2>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    {{ form.amount.label }} {{ form.amount(size=32) }}<br>
+    {{ form.description.label }} {{ form.description(rows=4) }}<br>
+    {{ form.date.label }} {{ form.date() }}<br>
+    {{ form.submit() }}
+</form>
+<a href="{{ url_for('dashboard') }}">Cancel</a>
+{% endblock %}
