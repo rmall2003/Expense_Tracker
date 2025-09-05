@@ -1,0 +1,19 @@
+# Python virtual environments
+venv/
+.venv/
+
+# Byte-compiled / cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment & config
+.env
+instance/
+
+# SQLite / other DB
+*.db
+
+# OS files
+.DS_Store
