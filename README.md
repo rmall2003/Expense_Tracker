@@ -23,23 +23,23 @@ By following these steps, you can obtain a copy of the project installed and run
 
 ### Installation
 1. Clone the repository
-```sh
+   ```sh
     git clone [https://github.com/rmall2003/Expense_Tracker.git](https://github.com/rmall2003/Expense_Tracker.git)
     cd Expense_Tracker
-```
+   ```
 2. Create a virtual environment
-```sh
+   ```sh
     python -m venv venv
-```
+   ```
 3. Activate the virtual environment
    - Windows:
      ```sh
      venv\Scripts\activate
      ```
    - macOS/Linux:
-    ```sh
-    source venv/bin/activate
-    ```
+     ```sh
+     source venv/bin/activate
+     ```
     
 4. Install the required packages
    ```sh
@@ -82,23 +82,23 @@ By following these steps, you can obtain a copy of the project installed and run
 
 ## Snapshots
 1. **Home Page:** The welcome page that introduces the Expense Tracker application.
-<img width="1919" height="830" alt="image" src="https://github.com/user-attachments/assets/658860e1-84b4-4e6e-ad06-fd7cc43bc783" />
+<img width="900" height="600" alt="image" src="https://github.com/user-attachments/assets/658860e1-84b4-4e6e-ad06-fd7cc43bc783" />
 
 2. **User Register and Login Page:** A view of the secure registration and login forms.
-<img width="1891" height="827" alt="image" src="https://github.com/user-attachments/assets/16207eeb-d957-4b86-864e-62d8e62a07cc" />
-<img width="1919" height="826" alt="image" src="https://github.com/user-attachments/assets/b2f67731-d094-46b2-a97f-c0340e86269c" />
+<img width="900" height="600" alt="image" src="https://github.com/user-attachments/assets/16207eeb-d957-4b86-864e-62d8e62a07cc" />
+<img width="900" height="600" alt="image" src="https://github.com/user-attachments/assets/b2f67731-d094-46b2-a97f-c0340e86269c" />
 
 3. **Add Expense:** The form for adding a new expense, including fields for amount, description, and category.
-<img width="1896" height="822" alt="image" src="https://github.com/user-attachments/assets/2ec87ad4-f2b5-4b3f-84ab-ac9d67e3df58" />
+<img width="900" height="600" alt="image" src="https://github.com/user-attachments/assets/2ec87ad4-f2b5-4b3f-84ab-ac9d67e3df58" />
 
 4. **Dashboard:** The main dashboard showing a summary of total expenses, monthly breakdowns, and a list of all expenses.
-<img width="1919" height="826" alt="image" src="https://github.com/user-attachments/assets/f81598e1-8557-4565-b34b-cedc57e4ba35" />
+<img width="900" height="600" alt="image" src="https://github.com/user-attachments/assets/f81598e1-8557-4565-b34b-cedc57e4ba35" />
 
 5. **Predict Budget:** The page displaying the predicted budget for the next month.
-<img width="1916" height="823" alt="image" src="https://github.com/user-attachments/assets/cee143b1-387f-48e8-8b27-713fec947d7f" />
+<img width="900" height="600" alt="image" src="https://github.com/user-attachments/assets/cee143b1-387f-48e8-8b27-713fec947d7f" />
 
 6. **User Profile Page:** The profile page that shows user details.
-<img width="959" height="417" alt="image" src="https://github.com/user-attachments/assets/3c982013-1cd6-4554-ae48-45b7779a4432" />
+<img width="900" height="600" alt="image" src="https://github.com/user-attachments/assets/3c982013-1cd6-4554-ae48-45b7779a4432" />
 
 7. **Admin Login:** The separate login page for administrators.
-<img width="400" height="500" alt="image" src="https://github.com/user-attachments/assets/4d0d8c3b-28f1-4761-b5aa-e57a55f9a410" />
+<img width="900" height="600" alt="image" src="https://github.com/user-attachments/assets/4d0d8c3b-28f1-4761-b5aa-e57a55f9a410" />
