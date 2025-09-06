@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Predicted Budget for Next Month</h2>
-<p>The predicted budget for next month is: <strong>${{ predicted_budget | round(2) }}</strong></p>
-<a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+<div class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+    <h2 class="text-2xl font-bold mb-4 text-center">Predicted Budget for Next Month</h2>
+    <p class="text-center mb-6">The predicted budget for next month is: <strong class="text-primary-color">${{ predicted_budget | round(2) }}</strong></p>
+</div>
+<div class="flex justify-center mt-6">
+    <a href="{{ url_for('dashboard') }}" class="btn bg-primary-color text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-80 transition-all duration-300">Back to Dashboard</a>
+</div>
 {% endblock %}
