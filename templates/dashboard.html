@@ -1,28 +1,35 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
-    <h2 class="text-2xl font-bold mb-4 text-center">Your Expenses</h2>
-    <p class="text-center mb-6">Total Expenses: ${{ total_expenses | round(2) }}</p>
+    
+    <h2 class="text-2xl font-bold mb-4 text-center">Expenses for {{ display_month }}</h2>
+    <p class="text-center mb-6">Total for {{ display_month }}: ${{ total_expenses | round(2) }}</p>
 
-    <h3 class="text-xl font-bold mb-4 text-center">Monthly Expenses</h3>
-    <table class="w-full border-collapse mb-8 rounded-lg overflow-hidden">
-        <thead>
-            <tr class="bg-gray-200">
-                <th class="p-3 text-left">Month</th>
-                <th class="p-3 text-left">Total Amount</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for month, total in monthly_expenses.items() %}
-            <tr class="border-b border-gray-200">
-                <td class="p-3">{{ month }}</td>
-                <td class="p-3">${{ total | round(2) }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="flex justify-between items-center mb-6"> <a href="{{ url_for('dashboard', year=prev_year, month=prev_month) }}" 
+           class="btn bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-80 transition-all duration-300">
+           &larr; Previous Month
+        </a>
 
-    <table class="w-full border-collapse rounded-lg overflow-hidden">
+        {% if is_future %}
+            <a href="#" 
+               onclick="alert('The next month is yet to come.'); return false;"
+               class="btn bg-gray-400 text-white font-bold py-2 px-4 rounded-lg cursor-not-allowed opacity-75">
+               Next Month &rarr;
+            </a>
+        {% else %}
+            <a href="{{ url_for('dashboard', year=next_year, month=next_month) }}" 
+               class="btn bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-80 transition-all duration-300">
+               Next Month &rarr;
+            </a>
+        {% endif %}
+    </div>
+<p></p>
+    <div class="flex justify-center mt-6 space-x-4">
+        <a href="{{ url_for('add_expense') }}" class="btn bg-primary-color text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-80 transition-all duration-300">Add Expense</a>
+        <a href="{{ url_for('predict_budget') }}" class="btn bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-80 transition-all duration-300">Predict Next Month's Budget</a>
+    </div>
+    
+    <table class="w-full border-collapse rounded-lg overflow-hidden mb-8">
         <thead>
             <tr class="bg-gray-200">
                 <th class="p-3 text-left">Amount</th>
@@ -44,13 +51,13 @@
                     </form>
                 </td>
             </tr>
+            {% else %}
+            <tr class="border-b border-gray-200">
+                <td colspan="4" class="p-3 text-center text-gray-500">No expenses found for this month.</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
-
-    <div class="flex justify-center mt-6 space-x-4">
-        <a href="{{ url_for('add_expense') }}" class="btn bg-primary-color text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-80 transition-all duration-300">Add Expense</a>
-        <a href="{{ url_for('predict_budget') }}" class="btn bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-opacity-80 transition-all duration-300">Predict Next Month's Budget</a>
-    </div>
+<p></p>
 </div>
 {% endblock %}

@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from forms import RegistrationForm, LoginForm, ExpenseForm, AdminLoginForm
 from models import User, Expense
 from db import db 
+from datetime import datetime, timedelta
+from sqlalchemy import extract
 from datetime import datetime
 from collections import defaultdict
 import pandas as pd
@@ -9,9 +11,10 @@ from sklearn.ensemble import RandomForestRegressor
 import numpy as np
 import re
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:<yoursqlpassword>@localhost/expense_tracker_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:rashimall@localhost/expense_tracker_db'
 db.init_app(app)
 
 
@@ -62,16 +65,58 @@ def dashboard():
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
-    expenses = Expense.query.filter_by(user_id=user.id).all()
+    today = datetime.now()
+    try:
+        year = request.args.get('year', default=today.year, type=int)
+        month = request.args.get('month', default=today.month, type=int)
+        current_date = datetime(year, month, 1)
+    except ValueError:
+        # Handle invalid month/year in query (e.g., month=13)
+        flash('Invalid date specified. Showing current month.', 'warning')
+        year = today.year
+        month = today.month
+        current_date = datetime(year, month, 1)
+
+    # Format a string for display, e.g., "November 2025"
+    display_month_str = current_date.strftime("%B %Y")
     
+    # Query expenses ONLY for the selected month and year
+    expenses = Expense.query.filter_by(user_id=user.id).filter(
+        extract('year', Expense.date) == year,
+        extract('month', Expense.date) == month
+    ).order_by(Expense.date.desc()).all() # Added order_by for clarity
+    
+    # Calculate total expenses for *only* the selected month
     total_expenses = sum(expense.amount for expense in expenses)
     
-    monthly_expenses = defaultdict(float)
-    for expense in expenses:
-        month_year = expense.date.strftime("%Y-%m")
-        monthly_expenses[month_year] += expense.amount
+    # --- Calculate previous and next month for navigation ---
+    
+    # Calculate previous month
+    # Go to the first day of the current month and subtract one day
+    last_day_prev_month = current_date - timedelta(days=1)
+    prev_year = last_day_prev_month.year
+    prev_month = last_day_prev_month.month
+    
+    # Calculate next month
+    # Go to the 28th day, add 4 days (to guarantee it's next month), then replace day with 1
+    first_day_next_month = (current_date.replace(day=28) + timedelta(days=4)).replace(day=1)
+    next_year = first_day_next_month.year
+    next_month = first_day_next_month.month
 
-    return render_template('dashboard.html', expenses=expenses, total_expenses=total_expenses, monthly_expenses=monthly_expenses)
+    # Check if the "next month" is in the future relative to *today*
+    is_future = (next_year > today.year) or (next_year == today.year and next_month > today.month)
+    
+    # The old `monthly_expenses` dictionary is no longer needed.
+    
+    return render_template('dashboard.html', 
+                           expenses=expenses, 
+                           total_expenses=total_expenses, 
+                           display_month=display_month_str, # New: "November 2025"
+                           prev_year=prev_year,             # New: e.g., 2025
+                           prev_month=prev_month,           # New: e.g., 10
+                           next_year=next_year,             # New: e.g., 2025
+                           next_month=next_month,           # New: e.g., 12
+                           is_future=is_future)             # New: True/False
 
 @app.route('/add_expense', methods=['GET', 'POST'])
 def add_expense():
