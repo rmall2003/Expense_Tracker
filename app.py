@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from forms import RegistrationForm, LoginForm, ExpenseForm, AdminLoginForm
-from models import User, Expense # Now this import will work
-from db import db  # Import db from the new file
+from models import User, Expense
+from db import db 
 from datetime import datetime
 from collections import defaultdict
 import pandas as pd
