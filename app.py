@@ -8,20 +8,11 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 import numpy as np
 import re
-# ...
-import re
-import os 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your_default_secret_key')
-
-# Database Configuration
-DATABASE_URL = os.environ.get('DATABASE_URL')
-if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1) 
-
-app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
-db.init_app(app) # <-- Change how db is initialized
+app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:<yoursqlpassword>@localhost/expense_tracker_db'
+db.init_app(app)
 
 
 @app.route('/')
