@@ -145,3 +145,18 @@ li {
     padding: 10px;
     border-radius: 5px;
 }
+
+.chart-container {
+    position: relative;
+    height: 400px; /* Fixed height for consistency */
+    width: 100%;
+    margin-top: 30px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+/* Optional: Make the form inputs inside the container look cleaner */
+.container form select {
+    background-color: var(--secondary-color);
+}

@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Expense Analytics</h2>
+
+    <form method="POST" action="{{ url_for('visualize') }}" class="mb-4">
+        
+        <div class="form-group">
+            <label for="mode">Select Data Source:</label>
+            <select name="mode" id="mode" class="form-control" onchange="toggleMonthSelector()">
+                <option value="monthly" {% if request.form.get('mode') == 'monthly' %}selected{% endif %}>Month vs Amount (Trend)</option>
+                <option value="category" {% if request.form.get('mode') == 'category' %}selected{% endif %}>Category vs Amount (Breakdown)</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="month-selector-group" style="display: none;">
+            <label for="month_selector">Select Specific Month:</label>
+            <select name="month_selector" class="form-control">
+                {% for m in available_months %}
+                <option value="{{ m }}" {% if request.form.get('month_selector') == m %}selected{% endif %}>{{ m }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="chart_type">Chart Type:</label>
+            <select name="chart_type" class="form-control">
+                <option value="bar" {% if request.form.get('chart_type') == 'bar' %}selected{% endif %}>Bar Graph</option>
+                <option value="line" {% if request.form.get('chart_type') == 'line' %}selected{% endif %}>Line Graph</option>
+                <option value="pie" {% if request.form.get('chart_type') == 'pie' %}selected{% endif %}>Pie Chart</option>
+                <option value="doughnut" {% if request.form.get('chart_type') == 'doughnut' %}selected{% endif %}>Doughnut Chart</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn">Generate Graph</button>
+    </form>
+
+    <hr>
+
+    <div class="chart-container">
+        {% if values %}
+            <canvas id="expenseChart"></canvas>
+        {% else %}
+            <p class="text-center" style="color: #7f8c8d; margin-top: 20px;">No data to display. Select options and click Generate.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    // Toggle Month Selector Visibility
+    function toggleMonthSelector() {
+        // We use safe checks to ensure elements exist before accessing .value
+        const modeElement = document.getElementById('mode');
+        const monthGroup = document.getElementById('month-selector-group');
+        
+        if (modeElement && monthGroup) {
+            if (modeElement.value === 'category') {
+                monthGroup.style.display = 'block';
+            } else {
+                monthGroup.style.display = 'none';
+            }
+        }
+    }
+
+    // Run on load
+    window.onload = function() {
+        toggleMonthSelector();
+        renderExpenseChart();
+    };
+
+    // Renamed function and variables to avoid "Redeclaration" conflicts
+    function renderExpenseChart() {
+        const chartCanvas = document.getElementById('expenseChart');
+        
+        // Stop if canvas is missing
+        if (!chartCanvas) return; 
+
+        // NOTE: Your editor might show red lines below. This is normal for Jinja templates.
+        // The Python server replaces these {{ variables }} with actual data before the browser sees them.
+        const myChartType = '{{ chart_type }}';
+        const myChartLabels = {{ labels | tojson | safe }};
+        const myChartValues = {{ values | tojson | safe }};
+        const myChartTitle = '{{ title }}';
+
+        // Destroy existing chart if it exists to prevent overlap
+        const existingChart = Chart.getChart(chartCanvas);
+        if (existingChart) {
+            existingChart.destroy();
+        }
+
+        // Custom colors
+        const palette = [
+            '#5a5c9a', '#f39c12', '#2ecc71', '#e74c3c', 
+            '#9b59b6', '#3498db', '#34495e', '#16a085'
+        ];
+
+        new Chart(chartCanvas, {
+            type: myChartType,
+            data: {
+                labels: myChartLabels,
+                datasets: [{
+                    label: myChartTitle,
+                    data: myChartValues,
+                    backgroundColor: myChartType === 'line' ? 'rgba(90, 92, 154, 0.2)' : palette,
+                    borderColor: '#5a5c9a',
+                    borderWidth: 1,
+                    fill: myChartType === 'line',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: true, text: myChartTitle }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

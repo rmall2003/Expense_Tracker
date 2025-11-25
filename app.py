@@ -10,11 +10,12 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 import numpy as np
 import re
+from sqlalchemy import func
 
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:<yoursqlpassword>/expense_tracker_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:<yoursqlpassword>@localhost/expense_tracker_db'
 db.init_app(app)
 
 
@@ -39,7 +40,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        if user and user.password == form.password.data: # A simple password check, should use hashing
+        if user and user.password == form.password.data: # A simple password check
             session['user_id'] = user.id
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))
@@ -104,10 +105,7 @@ def dashboard():
     next_month = first_day_next_month.month
 
     # Check if the "next month" is in the future relative to *today*
-    is_future = (next_year > today.year) or (next_year == today.year and next_month > today.month)
-    
-    # The old `monthly_expenses` dictionary is no longer needed.
-    
+    is_future = (next_year > today.year) or (next_year == today.year and next_month > today.month)   
     return render_template('dashboard.html', 
                            expenses=expenses, 
                            total_expenses=total_expenses, 
@@ -209,6 +207,87 @@ def predict_budget():
     predicted_budget = model.predict(next_month_timestamp)
 
     return render_template('predict_budget.html', predicted_budget=predicted_budget[0])
+
+@app.route('/visualize', methods=['GET', 'POST'])
+def visualize():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user_id = session['user_id']
+    
+    # Defaults
+    labels = []
+    values = []
+    chart_type = 'bar'
+    title = "Expense Visualization"
+    
+    # Get all distinct months available in DB for the dropdown
+    # Returns a list of tuples like [(2025, 11), (2025, 10)]
+    available_months_query = db.session.query(
+        extract('year', Expense.date), 
+        extract('month', Expense.date)
+    ).filter_by(user_id=user_id).group_by(
+        extract('year', Expense.date), 
+        extract('month', Expense.date)
+    ).order_by(
+        extract('year', Expense.date).desc(), 
+        extract('month', Expense.date).desc()
+    ).all()
+
+    # Format months for dropdown: "2025-11"
+    available_months = [f"{y}-{m:02d}" for y, m in available_months_query]
+
+    if request.method == 'POST':
+        mode = request.form.get('mode') # 'monthly' or 'category'
+        selected_chart = request.form.get('chart_type')
+        selected_month_str = request.form.get('month_selector') # Format "YYYY-MM"
+
+        chart_type = selected_chart
+
+        if mode == 'monthly':
+            # Logic: Group by Month/Year, Sum Amount
+            title = "Total Expenses per Month"
+            results = db.session.query(
+                extract('year', Expense.date),
+                extract('month', Expense.date),
+                func.sum(Expense.amount)
+            ).filter_by(user_id=user_id).group_by(
+                extract('year', Expense.date), 
+                extract('month', Expense.date)
+            ).order_by(extract('year', Expense.date), extract('month', Expense.date)).all()
+            
+            # Create labels like "Nov 2025" and values
+            for year, month, total in results:
+                date_obj = datetime(year, month, 1)
+                labels.append(date_obj.strftime("%b %Y"))
+                values.append(float(total))
+
+        elif mode == 'category':
+            # Logic: Filter by specific month, Group by Category
+            if selected_month_str:
+                year, month = map(int, selected_month_str.split('-'))
+                title = f"Expenses by Category for {datetime(year, month, 1).strftime('%B %Y')}"
+                
+                results = db.session.query(
+                    Expense.category, 
+                    func.sum(Expense.amount)
+                ).filter_by(user_id=user_id).filter(
+                    extract('year', Expense.date) == year,
+                    extract('month', Expense.date) == month
+                ).group_by(Expense.category).all()
+                
+                for cat, total in results:
+                    labels.append(cat)
+                    values.append(float(total))
+            else:
+                flash("Please select a month to view category breakdown.", "warning")
+
+    return render_template('visualize.html', 
+                           labels=labels, 
+                           values=values, 
+                           chart_type=chart_type, 
+                           title=title,
+                           available_months=available_months)
 
 @app.route('/profile')
 def profile():

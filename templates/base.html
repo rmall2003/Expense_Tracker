@@ -14,6 +14,7 @@
             {% if 'user_id' in session %}
                 <a href="{{ url_for('dashboard') }}">Dashboard</a>
                 <a href="{{ url_for('add_expense') }}">Add Expense</a>
+                <a href="{{ url_for('visualize') }}">Analytics</a>
                 <a href="{{ url_for('profile') }}">Profile</a>
                 <a href="{{ url_for('logout') }}">Logout</a>
             {% elif 'admin_id' in session %}
