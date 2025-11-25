@@ -29,7 +29,6 @@
                 <option value="bar" {% if request.form.get('chart_type') == 'bar' %}selected{% endif %}>Bar Graph</option>
                 <option value="line" {% if request.form.get('chart_type') == 'line' %}selected{% endif %}>Line Graph</option>
                 <option value="pie" {% if request.form.get('chart_type') == 'pie' %}selected{% endif %}>Pie Chart</option>
-                <option value="doughnut" {% if request.form.get('chart_type') == 'doughnut' %}selected{% endif %}>Doughnut Chart</option>
             </select>
         </div>
 
